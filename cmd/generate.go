@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"go/token"
+	"go/types"
 	"os"
 
 	"github.com/pb33f/libopenapi"
@@ -43,7 +43,15 @@ func NewGenerate() *cobra.Command {
 				cli.Fail(errors)
 			}
 
-			fset := token.NewFileSet()
+			// fset := token.NewFileSet()
+			// f := fset.AddFile("order.go", fset.Base(), 0)
+			// format.Node(os.Stdout, fset, f)
+			pkg := types.NewPackage("order.go", "order")
+			s := types.NewStruct([]*types.Var{
+				types.NewField(0, pkg, "Test", types.Typ[types.String], false),
+			}, nil)
+			n := types.NewTypeName(0, pkg, "Order", s)
+			fmt.Println(n.String())
 
 			for name, value := range model.Model.Components.Schemas.FromOldest() {
 				schema := value.Schema()

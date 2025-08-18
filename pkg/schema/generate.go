@@ -1,20 +1,15 @@
 package schema
 
 import (
-	"go/ast"
-	"go/token"
+	"go/types"
 
 	"github.com/pb33f/libopenapi/datamodel/high/base"
 )
 
-func ToType(schema *base.Schema) ast.StructType {
-	fset := token.NewFileSet()
-
-	return ast.StructType{
-		Fields: Fields(schema),
-	}
+func Struct(schema *base.Schema) *types.Struct {
+	return types.NewStruct(Fields(schema), nil)
 }
 
-func Fields(schema *base.Schema) *ast.FieldList {
-	return &ast.FieldList{}
+func Fields(schema *base.Schema) []*types.Var {
+	return []*types.Var{}
 }
