@@ -21,7 +21,7 @@ func Field(name string, schema *base.Schema) (*ast.Field, error) {
 	typ, err := Primitive(schema.Type[0])
 	if err != nil {
 		// return nil, err
-		typ = schema.Type[0]
+		typ = schema.Type[0] // TODO
 	}
 
 	return &ast.Field{
@@ -53,6 +53,8 @@ func PackageName(doc v3.Document) string {
 
 func Primitive(name string) (string, error) {
 	switch name {
+	case "boolean":
+		return "bool", nil
 	case "integer":
 		return "int", nil
 	case "string":

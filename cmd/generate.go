@@ -5,6 +5,7 @@ import (
 	"go/format"
 	"go/token"
 	"os"
+	"path/filepath"
 
 	"github.com/pb33f/libopenapi"
 	"github.com/spf13/afero"
@@ -53,9 +54,21 @@ func NewGenerate() *cobra.Command {
 				cli.Fail(err)
 			}
 
-			for _, file := range files {
-				if err := format.Node(os.Stdout, fset, file); err != nil {
+			if len(opts.Output) > 0 {
+				out := filepath.Join(opts.Output, "petstore.go") // TODO
+				f, err := fsys.Create(out)
+				if err != nil {
 					cli.Fail(err)
+				}
+
+				if err := format.Node(f, fset, files[0]); err != nil {
+					cli.Fail(err)
+				}
+			} else {
+				for _, f := range files {
+					if err := format.Node(os.Stdout, fset, f); err != nil {
+						cli.Fail(err)
+					}
 				}
 			}
 		},

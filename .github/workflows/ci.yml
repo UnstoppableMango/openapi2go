@@ -10,5 +10,5 @@ jobs:
     name: Build and Test
     steps:
       - uses: actions/checkout@v5
-      
+
       - run: make
