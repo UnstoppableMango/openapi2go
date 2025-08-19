@@ -1,22 +1,14 @@
 package cmd
 
 import (
-	"fmt"
-	"go/ast"
 	"go/format"
-	"go/parser"
 	"go/token"
 	"os"
 
-	"github.com/pb33f/libopenapi"
 	"github.com/spf13/cobra"
 	"github.com/unmango/go/cli"
+	"github.com/unstoppablemango/openapi2go/pkg/gen"
 )
-
-type GenerateOptions struct {
-	Output        string
-	Specification string
-}
 
 var generate = NewGenerate()
 
@@ -25,69 +17,21 @@ func init() {
 }
 
 func NewGenerate() *cobra.Command {
-	opts := &GenerateOptions{}
+	opts := gen.Options{}
 
 	cmd := &cobra.Command{
 		Use: "generate",
 		Run: func(cmd *cobra.Command, args []string) {
-			// config := config.Must(config.Read())
-			spec, err := os.ReadFile(opts.Specification)
-			if err != nil {
-				cli.Fail(err)
-			}
-
-			doc, err := libopenapi.NewDocument(spec)
-			if err != nil {
-				cli.Fail(err)
-			}
-
-			model, errors := doc.BuildV3Model()
-			if len(errors) > 0 {
-				cli.Fail(errors)
-			}
-
 			fset := token.NewFileSet()
-			f, err := parser.ParseFile(fset, "order.go", "package order", parser.SkipObjectResolution)
+			files, err := gen.Execute(cmd.Context(), fset, opts)
 			if err != nil {
 				cli.Fail(err)
 			}
 
-			f.Decls = append(f.Decls, &ast.GenDecl{
-				Tok: token.TYPE,
-				Specs: []ast.Spec{
-					&ast.TypeSpec{
-						Name: ast.NewIdent("OrderTest"),
-						Type: &ast.StructType{
-							Fields: &ast.FieldList{
-								List: []*ast.Field{
-									{
-										Names: []*ast.Ident{
-											ast.NewIdent("test"),
-										},
-										Type: ast.NewIdent("string"),
-									},
-								},
-							},
-						},
-					},
-				},
-			})
-
-			if err = format.Node(os.Stdout, fset, f); err != nil {
-				cli.Fail(err)
-			}
-
-			// format.Node(os.Stdout, fset, f)
-			// pkg := types.NewPackage("order.go", "order")
-			// s := types.NewStruct([]*types.Var{
-			// 	types.NewField(0, pkg, "Test", types.Typ[types.String], false),
-			// }, nil)
-			// n := types.NewTypeName(0, pkg, "Order", s)
-			// fmt.Println(n.String())
-
-			for name, value := range model.Model.Components.Schemas.FromOldest() {
-				schema := value.Schema()
-				fmt.Printf("Found: %s = %v\n", name, schema)
+			for _, file := range files {
+				if err := format.Node(os.Stdout, fset, file); err != nil {
+					cli.Fail(err)
+				}
 			}
 		},
 	}

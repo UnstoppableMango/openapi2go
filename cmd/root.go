@@ -1,6 +1,9 @@
 package cmd
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/charmbracelet/log"
+	"github.com/spf13/cobra"
+)
 
 var root = &cobra.Command{
 	Use:   "openapi2go",
@@ -8,5 +11,6 @@ var root = &cobra.Command{
 }
 
 func Execute() error {
+	log.SetLevel(log.DebugLevel)
 	return root.Execute()
 }

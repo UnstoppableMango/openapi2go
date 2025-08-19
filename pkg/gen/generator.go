@@ -1,0 +1,111 @@
+package gen
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"go/ast"
+	"go/parser"
+	"go/token"
+	"maps"
+	"slices"
+	"strings"
+
+	"github.com/charmbracelet/log"
+	"github.com/pb33f/libopenapi"
+	v3 "github.com/pb33f/libopenapi/datamodel/high/v3"
+	"github.com/spf13/afero"
+	openapi2go "github.com/unstoppablemango/openapi2go/pkg"
+	"github.com/unstoppablemango/openapi2go/pkg/config"
+	"github.com/unstoppablemango/openapi2go/pkg/openapi"
+)
+
+const DefaultFileSuffix = ".zz_generated.go"
+
+type Generator struct {
+	conf   openapi2go.Config
+	doc    v3.Document
+	suffix string
+}
+
+func New(doc v3.Document) *Generator {
+	return &Generator{config.Default, doc, DefaultFileSuffix}
+}
+
+func (g *Generator) Execute(fset *token.FileSet) ([]*ast.File, error) {
+	if c := g.doc.Components; c == nil || c.Schemas == nil {
+		return nil, nil
+	}
+
+	decls := map[string]ast.Decl{}
+	for name, proxy := range g.doc.Components.Schemas.FromOldest() {
+		log.Info("Generating types", "name", name)
+		if decl, err := openapi.Type(name, proxy.Schema()); err != nil {
+			return nil, err
+		} else {
+			decls[name] = decl
+		}
+	}
+
+	if f, err := g.parseFile(fset); err != nil {
+		return nil, err
+	} else {
+		f.Decls = slices.Collect(maps.Values(decls))
+		return []*ast.File{f}, nil
+	}
+}
+
+func (g *Generator) packageName() string {
+	if n := openapi.PackageName(g.doc); validPackageName(n) {
+		return g.conf.PackageName
+	} else {
+		return n
+	}
+}
+
+func (g *Generator) filename() string {
+	return g.packageName() + g.suffix
+}
+
+func (g *Generator) parseFile(fset *token.FileSet) (*ast.File, error) {
+	return parser.ParseFile(fset,
+		g.filename(),
+		fmt.Sprintf("package %s", g.packageName()),
+		parser.SkipObjectResolution,
+	)
+}
+
+func Execute(ctx context.Context, fset *token.FileSet, opts Options) ([]*ast.File, error) {
+	log := log.FromContext(ctx)
+	if opts.Fs == nil {
+		opts.Fs = afero.NewOsFs()
+	}
+
+	log.Debug("Reading specification", "path", opts.Specification)
+	spec, err := afero.ReadFile(opts.Fs, opts.Specification)
+	if err != nil {
+		return nil, err
+	}
+
+	log.Debug("Parsing spec model")
+	doc, err := libopenapi.NewDocument(spec)
+	if err != nil {
+		return nil, err
+	}
+
+	docModel, errs := doc.BuildV3Model()
+	if len(errs) > 0 {
+		return nil, errors.Join(errs...)
+	}
+
+	log.Debug("Generating AST")
+	return Generate(fset, docModel.Model)
+}
+
+func Generate(fset *token.FileSet, doc v3.Document) ([]*ast.File, error) {
+	return New(doc).Execute(fset)
+}
+
+func validPackageName(name string) bool {
+	return strings.ContainsAny(name, " \t\n")
+}

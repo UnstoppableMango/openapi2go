@@ -1,3 +1,5 @@
 package openapi2go
 
-type Config struct{}
+type Config struct {
+	PackageName string
+}
