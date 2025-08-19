@@ -1,26 +1,43 @@
 package config
 
 import (
+	"github.com/charmbracelet/log"
 	"github.com/spf13/viper"
-	"github.com/unmango/go/cli"
 	openapi2go "github.com/unstoppablemango/openapi2go/pkg"
 )
 
-func Read() (*openapi2go.Config, error) {
-	viper := viper.New()
+func Read() (openapi2go.Config, error) {
+	v := Viper("")
 
-	config := &openapi2go.Config{}
-	if err := viper.Unmarshal(config); err != nil {
-		return nil, err
+	if err := v.ReadInConfig(); err == nil {
+		log.Debug("Using config file", "path", v.ConfigFileUsed())
+	}
+
+	return Parse(v)
+}
+
+func Parse(v *viper.Viper) (openapi2go.Config, error) {
+	config := openapi2go.Config{}
+	if err := Unmarshal(v, &config); err != nil {
+		return openapi2go.Config{}, err
 	} else {
 		return config, nil
 	}
 }
 
-func Must(config *openapi2go.Config, err error) *openapi2go.Config {
-	if err != nil {
-		cli.Fail(err)
+func Unmarshal(v *viper.Viper, config *openapi2go.Config) error {
+	return viper.Unmarshal(config)
+}
+
+func Viper(configFile string) *viper.Viper {
+	v := viper.New()
+	if configFile != "" {
+		v.SetConfigFile(configFile)
+	} else {
+		v.AddConfigPath(".")
+		v.SetConfigName(".openapi2go")
+		v.SetConfigType("yaml")
 	}
 
-	return config
+	return v
 }

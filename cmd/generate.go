@@ -1,12 +1,16 @@
 package cmd
 
 import (
+	"errors"
 	"go/format"
 	"go/token"
 	"os"
 
+	"github.com/pb33f/libopenapi"
+	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 	"github.com/unmango/go/cli"
+	openapi2go "github.com/unstoppablemango/openapi2go/pkg"
 	"github.com/unstoppablemango/openapi2go/pkg/gen"
 )
 
@@ -22,8 +26,29 @@ func NewGenerate() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "generate",
 		Run: func(cmd *cobra.Command, args []string) {
+			fsys := afero.NewOsFs()
+			spec, err := afero.ReadFile(fsys, opts.Specification)
+			if err != nil {
+				cli.Fail(err)
+			}
+
+			docModel, err := libopenapi.NewDocument(spec)
+			if err != nil {
+				cli.Fail(err)
+			}
+
+			doc, errs := docModel.BuildV3Model()
+			if len(errs) > 0 {
+				cli.Fail(errors.Join(errs...))
+			}
+
+			// TODO: Be less lazy
+			if len(opts.PackageName) > 0 {
+				conf.PackageName = opts.PackageName
+			}
+
 			fset := token.NewFileSet()
-			files, err := gen.Execute(cmd.Context(), fset, opts)
+			files, err := openapi2go.Generate(fset, doc.Model, conf)
 			if err != nil {
 				cli.Fail(err)
 			}
@@ -41,6 +66,9 @@ func NewGenerate() *cobra.Command {
 	)
 	cmd.Flags().StringVar(&opts.Output, "output", "",
 		"Path to the generated code output",
+	)
+	cmd.Flags().StringVar(&opts.PackageName, "package-name", "",
+		"Name of the output package",
 	)
 
 	return cmd

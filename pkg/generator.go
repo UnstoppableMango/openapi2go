@@ -1,8 +1,6 @@
-package gen
+package openapi2go
 
 import (
-	"context"
-	"errors"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -12,24 +10,19 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/log"
-	"github.com/pb33f/libopenapi"
 	v3 "github.com/pb33f/libopenapi/datamodel/high/v3"
-	"github.com/spf13/afero"
-	openapi2go "github.com/unstoppablemango/openapi2go/pkg"
-	"github.com/unstoppablemango/openapi2go/pkg/config"
 	"github.com/unstoppablemango/openapi2go/pkg/openapi"
 )
 
 const DefaultFileSuffix = ".zz_generated.go"
 
 type Generator struct {
-	conf   openapi2go.Config
-	doc    v3.Document
-	suffix string
+	Config
+	doc v3.Document
 }
 
-func New(doc v3.Document) *Generator {
-	return &Generator{config.Default, doc, DefaultFileSuffix}
+func NewGenerator(doc v3.Document, config Config) *Generator {
+	return &Generator{config, doc}
 }
 
 func (g *Generator) Execute(fset *token.FileSet) ([]*ast.File, error) {
@@ -57,14 +50,14 @@ func (g *Generator) Execute(fset *token.FileSet) ([]*ast.File, error) {
 
 func (g *Generator) packageName() string {
 	if n := openapi.PackageName(g.doc); validPackageName(n) {
-		return g.conf.PackageName
+		return g.PackageName
 	} else {
 		return n
 	}
 }
 
 func (g *Generator) filename() string {
-	return g.packageName() + g.suffix
+	return g.packageName() + g.FileNameSuffix
 }
 
 func (g *Generator) parseFile(fset *token.FileSet) (*ast.File, error) {
@@ -75,35 +68,8 @@ func (g *Generator) parseFile(fset *token.FileSet) (*ast.File, error) {
 	)
 }
 
-func Execute(ctx context.Context, fset *token.FileSet, opts Options) ([]*ast.File, error) {
-	log := log.FromContext(ctx)
-	if opts.Fs == nil {
-		opts.Fs = afero.NewOsFs()
-	}
-
-	log.Debug("Reading specification", "path", opts.Specification)
-	spec, err := afero.ReadFile(opts.Fs, opts.Specification)
-	if err != nil {
-		return nil, err
-	}
-
-	log.Debug("Parsing spec model")
-	doc, err := libopenapi.NewDocument(spec)
-	if err != nil {
-		return nil, err
-	}
-
-	docModel, errs := doc.BuildV3Model()
-	if len(errs) > 0 {
-		return nil, errors.Join(errs...)
-	}
-
-	log.Debug("Generating AST")
-	return Generate(fset, docModel.Model)
-}
-
-func Generate(fset *token.FileSet, doc v3.Document) ([]*ast.File, error) {
-	return New(doc).Execute(fset)
+func Generate(fset *token.FileSet, doc v3.Document, config Config) ([]*ast.File, error) {
+	return NewGenerator(doc, config).Execute(fset)
 }
 
 func validPackageName(name string) bool {
