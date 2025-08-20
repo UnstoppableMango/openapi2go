@@ -14,8 +14,6 @@ import (
 	"github.com/unstoppablemango/openapi2go/pkg/openapi"
 )
 
-const DefaultFileSuffix = ".zz_generated.go"
-
 type Generator struct {
 	Config
 	doc v3.Document

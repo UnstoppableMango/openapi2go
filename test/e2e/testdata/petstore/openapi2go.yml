@@ -1,0 +1,6 @@
+packageName: petstore
+types:
+  Pet:
+    fields:
+      Category:
+        type: any
