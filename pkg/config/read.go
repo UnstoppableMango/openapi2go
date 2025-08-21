@@ -3,10 +3,9 @@ package config
 import (
 	"github.com/charmbracelet/log"
 	"github.com/spf13/viper"
-	openapi2go "github.com/unstoppablemango/openapi2go/pkg"
 )
 
-func Read() (openapi2go.Config, error) {
+func Read() (Config, error) {
 	v := Viper("")
 
 	if err := v.ReadInConfig(); err == nil {
@@ -16,16 +15,16 @@ func Read() (openapi2go.Config, error) {
 	return Parse(v)
 }
 
-func Parse(v *viper.Viper) (openapi2go.Config, error) {
-	config := openapi2go.Config{}
+func Parse(v *viper.Viper) (Config, error) {
+	config := Config{}
 	if err := Unmarshal(v, &config); err != nil {
-		return openapi2go.Config{}, err
+		return Config{}, err
 	} else {
 		return config, nil
 	}
 }
 
-func Unmarshal(v *viper.Viper, config *openapi2go.Config) error {
+func Unmarshal(v *viper.Viper, config *Config) error {
 	return viper.Unmarshal(config)
 }
 

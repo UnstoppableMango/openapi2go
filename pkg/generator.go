@@ -11,15 +11,16 @@ import (
 
 	"github.com/charmbracelet/log"
 	v3 "github.com/pb33f/libopenapi/datamodel/high/v3"
+	"github.com/unstoppablemango/openapi2go/pkg/config"
 	"github.com/unstoppablemango/openapi2go/pkg/openapi"
 )
 
 type Generator struct {
-	Config
+	config.Config
 	doc v3.Document
 }
 
-func NewGenerator(doc v3.Document, config Config) *Generator {
+func NewGenerator(doc v3.Document, config config.Config) *Generator {
 	return &Generator{config, doc}
 }
 
@@ -31,7 +32,7 @@ func (g *Generator) Execute(fset *token.FileSet) ([]*ast.File, error) {
 	decls := map[string]ast.Decl{}
 	for name, proxy := range g.doc.Components.Schemas.FromOldest() {
 		log.Info("Generating types", "name", name)
-		if decl, err := openapi.Type(name, proxy.Schema()); err != nil {
+		if decl, err := openapi.Type(name, proxy.Schema(), &g.Config); err != nil {
 			return nil, err
 		} else {
 			decls[name] = decl
@@ -66,7 +67,7 @@ func (g *Generator) parseFile(fset *token.FileSet) (*ast.File, error) {
 	)
 }
 
-func Generate(fset *token.FileSet, doc v3.Document, config Config) ([]*ast.File, error) {
+func Generate(fset *token.FileSet, doc v3.Document, config config.Config) ([]*ast.File, error) {
 	return NewGenerator(doc, config).Execute(fset)
 }
 

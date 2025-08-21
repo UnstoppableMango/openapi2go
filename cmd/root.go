@@ -3,12 +3,11 @@ package cmd
 import (
 	"github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
-	openapi2go "github.com/unstoppablemango/openapi2go/pkg"
 	"github.com/unstoppablemango/openapi2go/pkg/config"
 )
 
 var (
-	conf       openapi2go.Config
+	conf       config.Config
 	configFile string
 
 	root = &cobra.Command{
@@ -40,5 +39,6 @@ func initConfig() {
 		conf = config.Default
 	} else {
 		conf = c
+		log.Debugf("%#v", conf)
 	}
 }
