@@ -1,0 +1,10 @@
+.github/
+.vscode/
+bin/
+test/
+.dockerignore
+.editorconfig
+.gitignore
+Dockerfile
+LICENSE
+Makefile
