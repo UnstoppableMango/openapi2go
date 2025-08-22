@@ -8,7 +8,3 @@ type Options struct {
 	Specification string
 	Fs            afero.Fs
 }
-
-func (o Options) readSpec() ([]byte, error) {
-	return afero.ReadFile(o.Fs, o.Specification)
-}
