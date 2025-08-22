@@ -14,7 +14,7 @@ import (
 var _ = Describe("Generate", func() {
 	It("should work", func() {
 		outpath := GinkgoT().TempDir()
-		cmd := exec.Command(cmdPath, "generate",
+		cmd := exec.Command(cmdPath,
 			"--package-name", "petstore",
 			"--specification", petstoreSpecPath,
 			"--config", filepath.Join(gitRoot, "test", "e2e", "testdata", "petstore", "openapi2go.yml"),

@@ -15,7 +15,7 @@ import (
 	"golang.org/x/text/language"
 )
 
-var titleCaser = cases.Title(language.English)
+var titleCase = cases.Title(language.English)
 
 type Generator struct {
 	config.Config
@@ -37,7 +37,7 @@ func (g *Generator) Execute(fset *token.FileSet) ([]*ast.File, error) {
 	}
 
 	for name, proxy := range g.doc.Components.Schemas.FromOldest() {
-		if decl, err := g.Type(name, proxy.Schema(), g.ForType(name)); err != nil {
+		if decl, err := g.Type(name, proxy.Schema(), g.For(name)); err != nil {
 			return nil, err
 		} else {
 			f.Decls = append(f.Decls, decl)
@@ -64,13 +64,13 @@ func (g *Generator) Field(name string, schema *base.Schema, config *config.Field
 }
 
 func (g *Generator) FieldName(name string, schema *base.Schema) *ast.Ident {
-	return ast.NewIdent(titleCaser.String(name)) // TODO: words and stuff
+	return ast.NewIdent(titleCase.String(name)) // TODO: words and stuff
 }
 
 func (g *Generator) Fields(schema *base.Schema, config *config.Type) (*ast.FieldList, error) {
 	list := &ast.FieldList{}
 	for name, prop := range schema.Properties.FromOldest() {
-		if field, err := g.Field(name, prop.Schema(), config.ForField(name)); err != nil {
+		if field, err := g.Field(name, prop.Schema(), config.For(name)); err != nil {
 			return nil, err
 		} else {
 			list.List = append(list.List, field)
