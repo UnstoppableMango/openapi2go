@@ -26,7 +26,8 @@ func NewGenerate() *cobra.Command {
 	opts := gen.Options{}
 
 	cmd := &cobra.Command{
-		Use: "generate",
+		Use:   "generate",
+		Short: "Generate code from the given specification",
 		Run: func(cmd *cobra.Command, args []string) {
 			fsys := afero.NewOsFs()
 			spec, err := afero.ReadFile(fsys, opts.Specification)
