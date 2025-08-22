@@ -2,6 +2,7 @@ package e2e_test
 
 import (
 	"context"
+	"embed"
 	"path/filepath"
 	"testing"
 
@@ -13,8 +14,12 @@ import (
 )
 
 var (
-	cmdPath      string
-	petstorePath string
+	cmdPath          string
+	gitRoot          string
+	petstoreSpecPath string
+
+	//go:embed testdata
+	testdata embed.FS
 )
 
 func TestE2e(t *testing.T) {
@@ -25,12 +30,13 @@ func TestE2e(t *testing.T) {
 var _ = BeforeSuite(func(ctx context.Context) {
 	root, err := git.Root(ctx)
 	Expect(err).NotTo(HaveOccurred())
+	gitRoot = root
 
 	cmdPath, err = gexec.Build(root)
 	Expect(err).NotTo(HaveOccurred())
 
-	petstorePath = filepath.Join(root, "bin", "petstore.json")
-	Expect(petstorePath).To(BeARegularFile())
+	petstoreSpecPath = filepath.Join(root, "bin", "petstore.json")
+	Expect(petstoreSpecPath).To(BeARegularFile())
 })
 
 var _ = AfterSuite(func() {

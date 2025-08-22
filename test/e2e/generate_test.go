@@ -1,6 +1,8 @@
 package e2e_test
 
 import (
+	"io/fs"
+	"os"
 	"os/exec"
 	"path/filepath"
 
@@ -14,16 +16,23 @@ var _ = Describe("Generate", func() {
 		outpath := GinkgoT().TempDir()
 		cmd := exec.Command(cmdPath, "generate",
 			"--package-name", "petstore",
-			"--specification", petstorePath,
+			"--specification", petstoreSpecPath,
+			"--config", filepath.Join(gitRoot, "test", "e2e", "testdata", "petstore", "openapi2go.yml"),
 			"--output", outpath,
 		)
+		data, err := fs.ReadFile(testdata, "testdata/petstore/petstore.go")
+		Expect(err).NotTo(HaveOccurred())
+		expected := string(data)
 
 		ses, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
 
 		Expect(err).NotTo(HaveOccurred())
 		Eventually(ses).Should(gexec.Exit(0))
 
-		orderpath := filepath.Join(outpath, "petstore.go")
-		Expect(orderpath).To(BeARegularFile())
+		genpath := filepath.Join(outpath, "petstore.go")
+		Expect(genpath).To(BeARegularFile())
+		actual, err := os.ReadFile(genpath)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(string(actual)).To(Equal(expected))
 	})
 })

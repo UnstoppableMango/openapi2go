@@ -5,8 +5,6 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"maps"
-	"slices"
 	"strings"
 
 	"github.com/charmbracelet/log"
@@ -33,22 +31,20 @@ func (g *Generator) Execute(fset *token.FileSet) ([]*ast.File, error) {
 		return nil, nil
 	}
 
-	decls := map[string]ast.Decl{}
+	f, err := g.parseFile(fset)
+	if err != nil {
+		return nil, err
+	}
+
 	for name, proxy := range g.doc.Components.Schemas.FromOldest() {
-		log.Info("Generating type", "name", name)
 		if decl, err := g.Type(name, proxy.Schema(), g.ForType(name)); err != nil {
 			return nil, err
 		} else {
-			decls[name] = decl
+			f.Decls = append(f.Decls, decl)
 		}
 	}
 
-	if f, err := g.parseFile(fset); err != nil {
-		return nil, err
-	} else {
-		f.Decls = slices.Collect(maps.Values(decls))
-		return []*ast.File{f}, nil
-	}
+	return []*ast.File{f}, nil
 }
 
 func (g *Generator) Field(name string, schema *base.Schema, config *config.Field) (*ast.Field, error) {

@@ -21,7 +21,7 @@ func Execute() error {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
+	// cobra.OnInitialize(initConfig)
 
 	root.PersistentFlags().StringVar(&configFile, "config", "",
 		"Path to a configuration file",
