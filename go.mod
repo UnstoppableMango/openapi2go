@@ -5,7 +5,7 @@ go 1.24.5
 require (
 	github.com/charmbracelet/log v0.4.2
 	github.com/goccy/go-yaml v1.18.0
-	github.com/onsi/ginkgo/v2 v2.23.4
+	github.com/onsi/ginkgo/v2 v2.25.1
 	github.com/onsi/gomega v1.37.0
 	github.com/pb33f/libopenapi v0.25.3
 	github.com/spf13/afero v1.14.0
