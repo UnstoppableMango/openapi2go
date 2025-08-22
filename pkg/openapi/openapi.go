@@ -5,6 +5,7 @@ import (
 	"go/ast"
 	"go/token"
 
+	"github.com/charmbracelet/log"
 	"github.com/pb33f/libopenapi/datamodel/high/base"
 	v3 "github.com/pb33f/libopenapi/datamodel/high/v3"
 	"github.com/unstoppablemango/openapi2go/pkg/config"
@@ -22,27 +23,25 @@ func Field(name string, schema *base.Schema, config *config.Field) (*ast.Field, 
 	var typ string
 	var err error
 
-	if config != nil && config.Type != "" {
-		typ = config.Type
-	} else if typ, err = Primitive(schema.Type[0]); err != nil {
-		// return nil, err
-		typ = schema.Type[0] // TODO
+	log.Debug("Generating field", "name", name, "config", config)
+	if typ, err = Primitive(config.TypeFor(schema.Type[0])); err != nil {
+		return nil, err
 	}
 
 	return &ast.Field{
-		Names: []*ast.Ident{ast.NewIdent(FieldName(name, schema))},
+		Names: []*ast.Ident{FieldName(name, schema)},
 		Type:  ast.NewIdent(typ),
 	}, nil
 }
 
-func FieldName(name string, schema *base.Schema) string {
-	return titleCaser.String(name) // TODO: words and stuff
+func FieldName(name string, schema *base.Schema) *ast.Ident {
+	return ast.NewIdent(titleCaser.String(name)) // TODO: words and stuff
 }
 
 func Fields(schema *base.Schema, config *config.Type) (*ast.FieldList, error) {
 	list := &ast.FieldList{}
 	for name, prop := range schema.Properties.FromOldest() {
-		if field, err := Field(name, prop.Schema(), config.GetField(name)); err != nil {
+		if field, err := Field(name, prop.Schema(), config.ForField(name)); err != nil {
 			return nil, err
 		} else {
 			list.List = append(list.List, field)
@@ -62,18 +61,19 @@ func Primitive(name string) (string, error) {
 		return "bool", nil
 	case "integer":
 		return "int", nil
-	case "string":
+	case "string", "any":
 		return name, nil
 	default:
 		return "", fmt.Errorf("unsupported primitive: %s", name)
 	}
 }
 
-func Type(name string, schema *base.Schema, config *config.Config) (*ast.GenDecl, error) {
+func Type(name string, schema *base.Schema, config *config.Type) (*ast.GenDecl, error) {
 	var err error
 
+	log.Debug("Generating type", "name", name, "config", config)
 	typ := &ast.StructType{}
-	if typ.Fields, err = Fields(schema, config.GetType(name)); err != nil {
+	if typ.Fields, err = Fields(schema, config); err != nil {
 		return nil, err
 	}
 

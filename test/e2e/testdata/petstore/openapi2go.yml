@@ -2,5 +2,9 @@ packageName: petstore
 types:
   Pet:
     fields:
-      Category:
+      category:
+        type: any
+      photoUrls:
+        type: any
+      tags:
         type: any

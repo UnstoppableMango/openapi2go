@@ -13,7 +13,7 @@ type Config struct {
 	Types          map[string]Type
 }
 
-func (c Config) GetType(name string) *Type {
+func (c Config) ForType(name string) *Type {
 	if t, ok := c.Types[name]; ok {
 		return &t
 	} else {
@@ -25,7 +25,7 @@ type Type struct {
 	Fields map[string]Field
 }
 
-func (t *Type) GetField(name string) *Field {
+func (t *Type) ForField(name string) *Field {
 	if t == nil {
 		return nil
 	}
@@ -39,6 +39,14 @@ func (t *Type) GetField(name string) *Field {
 
 type Field struct {
 	Type string
+}
+
+func (c *Field) TypeFor(given string) string {
+	if c != nil && c.Type != "" {
+		return c.Type
+	} else {
+		return given
+	}
 }
 
 func Must(config Config, err error) Config {

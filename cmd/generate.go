@@ -12,6 +12,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/unmango/go/cli"
 	openapi2go "github.com/unstoppablemango/openapi2go/pkg"
+	"github.com/unstoppablemango/openapi2go/pkg/config"
 	"github.com/unstoppablemango/openapi2go/pkg/gen"
 )
 
@@ -41,6 +42,11 @@ func NewGenerate() *cobra.Command {
 			doc, errs := docModel.BuildV3Model()
 			if len(errs) > 0 {
 				cli.Fail(errors.Join(errs...))
+			}
+
+			conf, err := config.Read(fsys, configFile)
+			if err != nil {
+				cli.Fail(err)
 			}
 
 			// TODO: Be less lazy

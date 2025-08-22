@@ -31,8 +31,8 @@ func (g *Generator) Execute(fset *token.FileSet) ([]*ast.File, error) {
 
 	decls := map[string]ast.Decl{}
 	for name, proxy := range g.doc.Components.Schemas.FromOldest() {
-		log.Info("Generating types", "name", name)
-		if decl, err := openapi.Type(name, proxy.Schema(), &g.Config); err != nil {
+		log.Info("Generating type", "name", name)
+		if decl, err := openapi.Type(name, proxy.Schema(), g.ForType(name)); err != nil {
 			return nil, err
 		} else {
 			decls[name] = decl
