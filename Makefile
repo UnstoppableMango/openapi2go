@@ -1,3 +1,5 @@
+_ != mkdir -p bin
+
 GO_SRC != find . -path '*.go'
 
 build: bin/openapi2go
