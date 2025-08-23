@@ -9,6 +9,7 @@ import (
 	"github.com/pb33f/libopenapi"
 	v3 "github.com/pb33f/libopenapi/datamodel/high/v3"
 	"github.com/spf13/afero"
+	"github.com/unstoppablemango/openapi2go/pkg/config"
 )
 
 type Options struct {
@@ -16,6 +17,12 @@ type Options struct {
 	PackageName   string
 	Specification string
 	Fs            afero.Fs
+}
+
+func (o Options) Apply(config *config.Config) {
+	if len(o.PackageName) > 0 {
+		config.PackageName = o.PackageName
+	}
 }
 
 func (o Options) OutputWriter(fsys afero.Fs) (io.Writer, error) {

@@ -31,10 +31,7 @@ var (
 				cli.Fail(err)
 			}
 
-			// TODO: Be less lazy
-			if len(opts.PackageName) > 0 {
-				conf.PackageName = opts.PackageName
-			}
+			opts.Apply(&conf)
 
 			fset := token.NewFileSet()
 			files, err := openapi2go.Generate(fset, model, conf)

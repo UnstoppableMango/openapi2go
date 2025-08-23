@@ -47,6 +47,18 @@ func (g *Generator) Execute(fset *token.FileSet) ([]*ast.File, error) {
 	return []*ast.File{f}, nil
 }
 
+func (g *Generator) Array(schema *base.Schema, config *config.Type) (*ast.Ident, error) {
+	if items := schema.Items; items.IsA() {
+		if s, err := items.A.BuildSchema(); err != nil {
+			return nil, err
+		} else {
+			return ast.NewIdent(s.Type[0]), nil
+		}
+	}
+
+	return nil, fmt.Errorf("items: bool not supported")
+}
+
 func (g *Generator) Field(name string, schema *base.Schema, config *config.Field) (*ast.Field, error) {
 	if len(schema.Type) < 1 {
 		return nil, fmt.Errorf("no types on field")
@@ -134,6 +146,19 @@ func (g *Generator) parseFile(fset *token.FileSet) (*ast.File, error) {
 		fmt.Sprintf("package %s", g.packageName()),
 		parser.SkipObjectResolution,
 	)
+}
+
+func (g *Generator) parseType(name string) (string, error) {
+	switch name {
+	case "boolean":
+		return "bool", nil
+	case "integer":
+		return "int", nil
+	case "string", "any":
+		return name, nil
+	default:
+		return "", fmt.Errorf("unsupported primitive: %s", name)
+	}
 }
 
 func Generate(fset *token.FileSet, doc v3.Document, config config.Config) ([]*ast.File, error) {
