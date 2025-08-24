@@ -15,15 +15,24 @@ import (
 	"golang.org/x/text/language"
 )
 
-var titleCase = cases.Title(language.English)
+var (
+	titleCase = cases.Title(language.English)
+
+	typeMap = map[string]string{
+		"integer": "int",
+		"boolean": "bool",
+		"string":  "string",
+		"any":     "any",
+	}
+)
 
 type Generator struct {
 	config.Config
 	doc v3.Document
 }
 
-func NewGenerator(doc v3.Document, config config.Config) *Generator {
-	return &Generator{config, doc}
+func NewGenerator(doc v3.Document, config *config.Config) *Generator {
+	return &Generator{*config, doc}
 }
 
 func (g *Generator) Execute(fset *token.FileSet) ([]*ast.File, error) {
@@ -47,7 +56,7 @@ func (g *Generator) Execute(fset *token.FileSet) ([]*ast.File, error) {
 	return []*ast.File{f}, nil
 }
 
-func (g *Generator) Array(schema *base.Schema, config *config.Type) (*ast.Ident, error) {
+func (g *Generator) Array(schema *base.Schema, config *config.Field) (*ast.Ident, error) {
 	if items := schema.Items; items.IsA() {
 		if s, err := items.A.BuildSchema(); err != nil {
 			return nil, err
@@ -65,18 +74,38 @@ func (g *Generator) Field(name string, schema *base.Schema, config *config.Field
 	}
 
 	log.Debug("Generating field", "name", name, "config", config)
-	if typ, err := g.Primitive(config.TypeFor(schema.Type[0])); err != nil {
+	typ, err := g.FieldType(schema, config)
+	if err != nil {
 		return nil, err
-	} else {
-		return &ast.Field{
-			Names: []*ast.Ident{g.FieldName(name, schema)},
-			Type:  ast.NewIdent(typ),
-		}, nil
 	}
+
+	return &ast.Field{
+		Names: []*ast.Ident{g.FieldName(name, schema)},
+		Type:  typ,
+	}, nil
 }
 
 func (g *Generator) FieldName(name string, schema *base.Schema) *ast.Ident {
 	return ast.NewIdent(titleCase.String(name)) // TODO: words and stuff
+}
+
+func (g *Generator) FieldType(schema *base.Schema, config *config.Field) (*ast.Ident, error) {
+	if len(schema.Type) < 1 {
+		return nil, fmt.Errorf("no types on field")
+	}
+
+	switch typ := schema.Type[0]; typ {
+	case "boolean":
+		return ast.NewIdent("bool"), nil
+	case "integer":
+		return ast.NewIdent("int"), nil
+	case "string", "any":
+		return ast.NewIdent(typ), nil
+	case "array":
+		return g.Array(schema, config)
+	default:
+		return nil, nil
+	}
 }
 
 func (g *Generator) Fields(schema *base.Schema, config *config.Type) (*ast.FieldList, error) {
@@ -92,17 +121,8 @@ func (g *Generator) Fields(schema *base.Schema, config *config.Type) (*ast.Field
 	return list, nil
 }
 
-func (g *Generator) Primitive(name string) (string, error) {
-	switch name {
-	case "boolean":
-		return "bool", nil
-	case "integer":
-		return "int", nil
-	case "string", "any":
-		return name, nil
-	default:
-		return "", fmt.Errorf("unsupported primitive: %s", name)
-	}
+func (g *Generator) Bool() *ast.Ident {
+	return ast.NewIdent("bool")
 }
 
 func (g *Generator) Type(name string, schema *base.Schema, config *config.Type) (*ast.GenDecl, error) {
@@ -161,7 +181,7 @@ func (g *Generator) parseType(name string) (string, error) {
 	}
 }
 
-func Generate(fset *token.FileSet, doc v3.Document, config config.Config) ([]*ast.File, error) {
+func Generate(fset *token.FileSet, doc v3.Document, config *config.Config) ([]*ast.File, error) {
 	return NewGenerator(doc, config).Execute(fset)
 }
 

@@ -4,34 +4,34 @@ import (
 	"go/format"
 	"go/token"
 
+	"github.com/charmbracelet/log"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 	"github.com/unmango/go/cli"
 	openapi2go "github.com/unstoppablemango/openapi2go/pkg"
-	"github.com/unstoppablemango/openapi2go/pkg/config"
 	"github.com/unstoppablemango/openapi2go/pkg/gen"
 )
 
 var (
-	configFile string
-	opts       gen.Options
+	opts gen.Options
 
 	root = &cobra.Command{
 		Use:   "openapi2go",
 		Short: "Generate Go code from OpenAPI specifications",
+		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			fsys := afero.NewOsFs()
+			opts.Specification = args[0]
+			log.Debug("Reading spec", "path", opts.Specification)
 			model, err := opts.ReadSpec(fsys)
 			if err != nil {
 				cli.Fail(err)
 			}
 
-			conf, err := config.Read(fsys, configFile)
+			conf, err := opts.ReadConfig(fsys)
 			if err != nil {
 				cli.Fail(err)
 			}
-
-			opts.Apply(&conf)
 
 			fset := token.NewFileSet()
 			files, err := openapi2go.Generate(fset, model, conf)
@@ -58,13 +58,10 @@ func Execute() error {
 }
 
 func init() {
-	root.PersistentFlags().StringVar(&configFile, "config", "",
+	root.PersistentFlags().StringVar(&opts.Config, "config", "",
 		"Path to a configuration file",
 	)
 
-	root.Flags().StringVar(&opts.Specification, "specification", "",
-		"Path to an OpenAPI specification file",
-	)
 	root.Flags().StringVar(&opts.Output, "output", "",
 		"Path to the generated code output",
 	)

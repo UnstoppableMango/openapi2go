@@ -1,6 +1,6 @@
 package config
 
-var Default = Config{
+var Default = &Config{
 	PackageName:    "openapi2go",
 	FileNameSuffix: ".zz_generated.go",
 }

@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/charmbracelet/log"
 	"github.com/pb33f/libopenapi"
 	v3 "github.com/pb33f/libopenapi/datamodel/high/v3"
 	"github.com/spf13/afero"
@@ -13,6 +14,7 @@ import (
 )
 
 type Options struct {
+	Config        string
 	Output        string
 	PackageName   string
 	Specification string
@@ -30,9 +32,21 @@ func (o Options) OutputWriter(fsys afero.Fs) (io.Writer, error) {
 		return os.Stdout, nil
 	}
 
-	return fsys.Create(
-		filepath.Join(o.Output, "petstore.go"), // TODO
-	)
+	out := filepath.Join(o.Output, "petstore.go")
+	log.Info("Writing", "out", out)
+	return fsys.Create(out)
+}
+
+func (o Options) ReadConfig(fs afero.Fs) (*config.Config, error) {
+	config, err := config.ReadFile(fs, o.Config)
+	if err != nil {
+		return nil, err
+	}
+	if len(o.PackageName) > 0 {
+		config.PackageName = o.PackageName
+	}
+
+	return config, nil
 }
 
 func (o Options) ReadSpec(fsys afero.Fs) (v3.Document, error) {
