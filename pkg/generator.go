@@ -15,16 +15,7 @@ import (
 	"golang.org/x/text/language"
 )
 
-var (
-	titleCase = cases.Title(language.English)
-
-	typeMap = map[string]string{
-		"integer": "int",
-		"boolean": "bool",
-		"string":  "string",
-		"any":     "any",
-	}
-)
+var titleCase = cases.Title(language.English)
 
 type Generator struct {
 	config.Config
@@ -56,16 +47,24 @@ func (g *Generator) Execute(fset *token.FileSet) ([]*ast.File, error) {
 	return []*ast.File{f}, nil
 }
 
-func (g *Generator) Array(schema *base.Schema, config *config.Field) (*ast.Ident, error) {
-	if items := schema.Items; items.IsA() {
-		if s, err := items.A.BuildSchema(); err != nil {
-			return nil, err
-		} else {
-			return ast.NewIdent(s.Type[0]), nil
-		}
+func (g *Generator) Array(schema *base.Schema, config *config.Field) (*ast.ArrayType, error) {
+	if schema.Items.IsB() {
+		// https://spec.openapis.org/oas/v3.1.0#schema-object
+		// https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-00#section-10.3.1.2
+		return nil, fmt.Errorf("items: bool not supported")
 	}
 
-	return nil, fmt.Errorf("items: bool not supported")
+	s, err := schema.Items.A.BuildSchema()
+	if err != nil {
+		return nil, err
+	}
+
+	typ, err := g.FieldType(s, config)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ast.ArrayType{Elt: typ}, nil
 }
 
 func (g *Generator) Field(name string, schema *base.Schema, config *config.Field) (*ast.Field, error) {
@@ -89,7 +88,7 @@ func (g *Generator) FieldName(name string, schema *base.Schema) *ast.Ident {
 	return ast.NewIdent(titleCase.String(name)) // TODO: words and stuff
 }
 
-func (g *Generator) FieldType(schema *base.Schema, config *config.Field) (*ast.Ident, error) {
+func (g *Generator) FieldType(schema *base.Schema, config *config.Field) (ast.Expr, error) {
 	if len(schema.Type) < 1 {
 		return nil, fmt.Errorf("no types on field")
 	}
@@ -103,8 +102,10 @@ func (g *Generator) FieldType(schema *base.Schema, config *config.Field) (*ast.I
 		return ast.NewIdent(typ), nil
 	case "array":
 		return g.Array(schema, config)
+	case "object":
+		return ast.NewIdent("any"), nil // TODO
 	default:
-		return nil, nil
+		return ast.NewIdent(typ), nil // TODO
 	}
 }
 
@@ -168,23 +169,10 @@ func (g *Generator) parseFile(fset *token.FileSet) (*ast.File, error) {
 	)
 }
 
-func (g *Generator) parseType(name string) (string, error) {
-	switch name {
-	case "boolean":
-		return "bool", nil
-	case "integer":
-		return "int", nil
-	case "string", "any":
-		return name, nil
-	default:
-		return "", fmt.Errorf("unsupported primitive: %s", name)
-	}
-}
-
 func Generate(fset *token.FileSet, doc v3.Document, config *config.Config) ([]*ast.File, error) {
 	return NewGenerator(doc, config).Execute(fset)
 }
 
 func validPackageName(name string) bool {
-	return !strings.ContainsAny(name, " \t\n")
+	return !strings.ContainsAny(name, " \t\n") // TODO
 }

@@ -13,14 +13,12 @@ import (
 
 var _ = Describe("Generate", func() {
 	It("should work", func() {
-		outpath := GinkgoT().TempDir()
-		cmd := exec.Command(cmdPath,
+		outdir := GinkgoT().TempDir()
+		cmd := exec.Command(cmdPath, petstoreSpecPath,
 			"--package-name", "petstore",
-			"--specification", petstoreSpecPath,
-			"--config", filepath.Join(gitRoot, "test", "e2e", "testdata", "petstore", "openapi2go.yml"),
-			"--output", outpath,
+			"--output", outdir,
 		)
-		data, err := fs.ReadFile(testdata, "testdata/petstore/petstore.go")
+		data, err := fs.ReadFile(testdata, "testdata/petstore.go")
 		Expect(err).NotTo(HaveOccurred())
 		expected := string(data)
 
@@ -29,7 +27,7 @@ var _ = Describe("Generate", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Eventually(ses).Should(gexec.Exit(0))
 
-		genpath := filepath.Join(outpath, "petstore.go")
+		genpath := filepath.Join(outdir, "petstore.go")
 		Expect(genpath).To(BeARegularFile())
 		actual, err := os.ReadFile(genpath)
 		Expect(err).NotTo(HaveOccurred())

@@ -34,8 +34,8 @@ type Pet struct {
 	Id        int
 	Name      string
 	Category  any
-	Photourls any
-	Tags      any
+	Photourls []string
+	Tags      []any
 	Status    string
 }
 
