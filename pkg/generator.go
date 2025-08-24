@@ -15,15 +15,15 @@ import (
 	"golang.org/x/text/language"
 )
 
-var titleCaser = cases.Title(language.English)
+var titleCase = cases.Title(language.English)
 
 type Generator struct {
 	config.Config
 	doc v3.Document
 }
 
-func NewGenerator(doc v3.Document, config config.Config) *Generator {
-	return &Generator{config, doc}
+func NewGenerator(doc v3.Document, config *config.Config) *Generator {
+	return &Generator{*config, doc}
 }
 
 func (g *Generator) Execute(fset *token.FileSet) ([]*ast.File, error) {
@@ -37,7 +37,7 @@ func (g *Generator) Execute(fset *token.FileSet) ([]*ast.File, error) {
 	}
 
 	for name, proxy := range g.doc.Components.Schemas.FromOldest() {
-		if decl, err := g.Type(name, proxy.Schema(), g.ForType(name)); err != nil {
+		if decl, err := g.Type(name, proxy.Schema(), g.For(name)); err != nil {
 			return nil, err
 		} else {
 			f.Decls = append(f.Decls, decl)
@@ -47,30 +47,72 @@ func (g *Generator) Execute(fset *token.FileSet) ([]*ast.File, error) {
 	return []*ast.File{f}, nil
 }
 
+func (g *Generator) Array(schema *base.Schema, config *config.Field) (*ast.ArrayType, error) {
+	if schema.Items.IsB() {
+		// https://spec.openapis.org/oas/v3.1.0#schema-object
+		// https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-00#section-10.3.1.2
+		return nil, fmt.Errorf("items: bool not supported")
+	}
+
+	s, err := schema.Items.A.BuildSchema()
+	if err != nil {
+		return nil, err
+	}
+
+	typ, err := g.FieldType(s, config)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ast.ArrayType{Elt: typ}, nil
+}
+
 func (g *Generator) Field(name string, schema *base.Schema, config *config.Field) (*ast.Field, error) {
 	if len(schema.Type) < 1 {
 		return nil, fmt.Errorf("no types on field")
 	}
 
 	log.Debug("Generating field", "name", name, "config", config)
-	if typ, err := g.Primitive(config.TypeFor(schema.Type[0])); err != nil {
+	typ, err := g.FieldType(schema, config)
+	if err != nil {
 		return nil, err
-	} else {
-		return &ast.Field{
-			Names: []*ast.Ident{g.FieldName(name, schema)},
-			Type:  ast.NewIdent(typ),
-		}, nil
 	}
+
+	return &ast.Field{
+		Names: []*ast.Ident{g.FieldName(name, schema)},
+		Type:  typ,
+	}, nil
 }
 
 func (g *Generator) FieldName(name string, schema *base.Schema) *ast.Ident {
-	return ast.NewIdent(titleCaser.String(name)) // TODO: words and stuff
+	return ast.NewIdent(titleCase.String(name)) // TODO: words and stuff
+}
+
+func (g *Generator) FieldType(schema *base.Schema, config *config.Field) (ast.Expr, error) {
+	if len(schema.Type) < 1 {
+		return nil, fmt.Errorf("no types on field")
+	}
+
+	switch typ := schema.Type[0]; typ {
+	case "boolean":
+		return ast.NewIdent("bool"), nil
+	case "integer":
+		return ast.NewIdent("int"), nil
+	case "string", "any":
+		return ast.NewIdent(typ), nil
+	case "array":
+		return g.Array(schema, config)
+	case "object":
+		return ast.NewIdent("any"), nil // TODO
+	default:
+		return ast.NewIdent(typ), nil // TODO
+	}
 }
 
 func (g *Generator) Fields(schema *base.Schema, config *config.Type) (*ast.FieldList, error) {
 	list := &ast.FieldList{}
 	for name, prop := range schema.Properties.FromOldest() {
-		if field, err := g.Field(name, prop.Schema(), config.ForField(name)); err != nil {
+		if field, err := g.Field(name, prop.Schema(), config.For(name)); err != nil {
 			return nil, err
 		} else {
 			list.List = append(list.List, field)
@@ -80,17 +122,8 @@ func (g *Generator) Fields(schema *base.Schema, config *config.Type) (*ast.Field
 	return list, nil
 }
 
-func (g *Generator) Primitive(name string) (string, error) {
-	switch name {
-	case "boolean":
-		return "bool", nil
-	case "integer":
-		return "int", nil
-	case "string", "any":
-		return name, nil
-	default:
-		return "", fmt.Errorf("unsupported primitive: %s", name)
-	}
+func (g *Generator) Bool() *ast.Ident {
+	return ast.NewIdent("bool")
 }
 
 func (g *Generator) Type(name string, schema *base.Schema, config *config.Type) (*ast.GenDecl, error) {
@@ -136,10 +169,10 @@ func (g *Generator) parseFile(fset *token.FileSet) (*ast.File, error) {
 	)
 }
 
-func Generate(fset *token.FileSet, doc v3.Document, config config.Config) ([]*ast.File, error) {
+func Generate(fset *token.FileSet, doc v3.Document, config *config.Config) ([]*ast.File, error) {
 	return NewGenerator(doc, config).Execute(fset)
 }
 
 func validPackageName(name string) bool {
-	return !strings.ContainsAny(name, " \t\n")
+	return !strings.ContainsAny(name, " \t\n") // TODO
 }

@@ -1,35 +1,30 @@
 package config
 
 import (
+	"github.com/charmbracelet/log"
 	"github.com/goccy/go-yaml"
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
 )
 
-func Read(fs afero.Fs, file string) (c Config, err error) {
+func ReadFile(fs afero.Fs, file string) (*Config, error) {
+	log.Debug("Reading config", "file", file)
 	data, err := afero.ReadFile(fs, file)
 	if err != nil {
-		return c, err
+		log.Debug("ReadFile", "file", file, "err", err)
+		return Default, nil
 	}
 
-	if err = yaml.Unmarshal(data, &c); err != nil {
-		return c, err
+	var c Config
+	if err = Unmarshal(data, &c); err != nil {
+		return nil, err
 	} else {
-		return c, nil
+		return &c, nil
 	}
 }
 
-func Parse(v *viper.Viper) (Config, error) {
-	config := Config{}
-	if err := Unmarshal(v, &config); err != nil {
-		return Config{}, err
-	} else {
-		return config, nil
-	}
-}
-
-func Unmarshal(v *viper.Viper, config *Config) error {
-	return viper.Unmarshal(config)
+func Unmarshal(data []byte, config *Config) error {
+	return yaml.Unmarshal(data, config)
 }
 
 func Viper(configFile string) *viper.Viper {

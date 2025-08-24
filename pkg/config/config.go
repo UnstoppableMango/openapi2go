@@ -1,10 +1,8 @@
 package config
 
-const DefaultFileSuffix = ".zz_generated.go"
-
-var Default = Config{
+var Default = &Config{
 	PackageName:    "openapi2go",
-	FileNameSuffix: DefaultFileSuffix,
+	FileNameSuffix: ".zz_generated.go",
 }
 
 type Config struct {
@@ -13,7 +11,7 @@ type Config struct {
 	Types          map[string]Type
 }
 
-func (c Config) ForType(name string) *Type {
+func (c Config) For(name string) *Type {
 	if t, ok := c.Types[name]; ok {
 		return &t
 	} else {
@@ -25,7 +23,7 @@ type Type struct {
 	Fields map[string]Field
 }
 
-func (t *Type) ForField(name string) *Field {
+func (t *Type) For(name string) *Field {
 	if t == nil {
 		return nil
 	}

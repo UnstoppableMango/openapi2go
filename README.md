@@ -8,18 +8,14 @@ A simple Go code generator for OpenAPI specifications.
 Generate Go code from OpenAPI specifications
 
 Usage:
-  openapi2go [command]
-
-Available Commands:
-  completion  Generate the autocompletion script for the specified shell
-  generate    Generate code from the given specification
-  help        Help about any command
+  openapi2go [flags]
 
 Flags:
-      --config string   Path to a configuration file
-  -h, --help            help for openapi2go
-
-Use "openapi2go [command] --help" for more information about a command.
+      --config string          Path to a configuration file
+  -h, --help                   help for openapi2go
+      --output string          Path to the generated code output
+      --package-name string    Name of the output package
+      --specification string   Path to an OpenAPI specification file
 ```
 
 ### Configuration
