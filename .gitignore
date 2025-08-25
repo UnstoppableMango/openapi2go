@@ -3,3 +3,4 @@ bin/
 *.test
 .DS_Store
 .make/
+go.work*
