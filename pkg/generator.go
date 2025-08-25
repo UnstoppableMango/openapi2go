@@ -11,6 +11,8 @@ import (
 	"github.com/pb33f/libopenapi/datamodel/high/base"
 	v3 "github.com/pb33f/libopenapi/datamodel/high/v3"
 	"github.com/unstoppablemango/openapi2go/pkg/config"
+	ux "github.com/unstoppablemango/ux/pkg"
+	"github.com/unstoppablemango/ux/pkg/config/option"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -19,11 +21,28 @@ var titleCase = cases.Title(language.English)
 
 type Generator struct {
 	config.Config
-	doc v3.Document
+	doc  v3.Document
+	spec string
 }
 
 func NewGenerator(doc v3.Document, config *config.Config) *Generator {
-	return &Generator{*config, doc}
+	return &Generator{*config, doc, ""}
+}
+
+func (g *Generator) Configure(b ux.Builder) error {
+	g.spec = option.Named(b, "specification")
+
+	return nil
+}
+
+func (g *Generator) Generate(ctx ux.Context) error {
+	// fset := token.NewFileSet()
+	r, err := ctx.Input(g.spec)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (g *Generator) Execute(fset *token.FileSet) ([]*ast.File, error) {
