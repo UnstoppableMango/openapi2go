@@ -29,8 +29,8 @@ func NewGenerator(doc v3.Document, config *config.Config) *Generator {
 	return &Generator{*config, doc, uuid.Nil}
 }
 
-func (g *Generator) Configure(b ux.Input) error {
-	g.spec = b.File()
+func (g *Generator) Configure(b ux.Inputs) error {
+	g.spec = b.Add(nil)
 
 	return nil
 }
