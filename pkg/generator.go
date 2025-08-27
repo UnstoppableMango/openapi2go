@@ -8,11 +8,11 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/log"
+	"github.com/google/uuid"
 	"github.com/pb33f/libopenapi/datamodel/high/base"
 	v3 "github.com/pb33f/libopenapi/datamodel/high/v3"
 	"github.com/unstoppablemango/openapi2go/pkg/config"
 	ux "github.com/unstoppablemango/ux/pkg"
-	"github.com/unstoppablemango/ux/pkg/config/option"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -22,15 +22,15 @@ var titleCase = cases.Title(language.English)
 type Generator struct {
 	config.Config
 	doc  v3.Document
-	spec string
+	spec uuid.UUID
 }
 
 func NewGenerator(doc v3.Document, config *config.Config) *Generator {
-	return &Generator{*config, doc, ""}
+	return &Generator{*config, doc, uuid.Nil}
 }
 
-func (g *Generator) Configure(b ux.Builder) error {
-	g.spec = option.Named(b, "specification")
+func (g *Generator) Configure(b ux.Input) error {
+	g.spec = b.File()
 
 	return nil
 }
