@@ -25,8 +25,8 @@ type Generator struct {
 	spec uuid.UUID
 }
 
-func NewGenerator(doc v3.Document, config *config.Config) *Generator {
-	return &Generator{*config, doc, uuid.Nil}
+func NewGenerator(doc v3.Document, config config.Config) *Generator {
+	return &Generator{config, doc, uuid.Nil}
 }
 
 func (g *Generator) Configure(b ux.Inputs) error {
@@ -36,8 +36,13 @@ func (g *Generator) Configure(b ux.Inputs) error {
 }
 
 func (g *Generator) Generate(ctx ux.Context) error {
-	// fset := token.NewFileSet()
+	fset := token.NewFileSet()
 	r, err := ctx.Input(g.spec)
+	if err != nil {
+		return err
+	}
+
+	files, err := g.Execute(fset)
 	if err != nil {
 		return err
 	}
@@ -188,7 +193,7 @@ func (g *Generator) parseFile(fset *token.FileSet) (*ast.File, error) {
 	)
 }
 
-func Generate(fset *token.FileSet, doc v3.Document, config *config.Config) ([]*ast.File, error) {
+func Generate(fset *token.FileSet, doc v3.Document, config config.Config) ([]*ast.File, error) {
 	return NewGenerator(doc, config).Execute(fset)
 }
 

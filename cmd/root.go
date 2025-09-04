@@ -34,7 +34,7 @@ var (
 			}
 
 			fset := token.NewFileSet()
-			files, err := openapi2go.Generate(fset, model, conf)
+			files, err := openapi2go.Generate(fset, model, *conf)
 			if err != nil {
 				cli.Fail(err)
 			}
