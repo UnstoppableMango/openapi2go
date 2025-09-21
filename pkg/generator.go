@@ -12,7 +12,6 @@ import (
 	"github.com/pb33f/libopenapi/datamodel/high/base"
 	v3 "github.com/pb33f/libopenapi/datamodel/high/v3"
 	"github.com/unstoppablemango/openapi2go/pkg/config"
-	ux "github.com/unstoppablemango/ux/pkg"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -27,27 +26,6 @@ type Generator struct {
 
 func NewGenerator(doc v3.Document, config config.Config) *Generator {
 	return &Generator{config, doc, uuid.Nil}
-}
-
-func (g *Generator) Configure(b ux.Inputs) error {
-	g.spec = b.Add(nil)
-
-	return nil
-}
-
-func (g *Generator) Generate(ctx ux.Context) error {
-	fset := token.NewFileSet()
-	r, err := ctx.Input(g.spec)
-	if err != nil {
-		return err
-	}
-
-	files, err := g.Execute(fset)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func (g *Generator) Execute(fset *token.FileSet) ([]*ast.File, error) {

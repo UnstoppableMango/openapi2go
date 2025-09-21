@@ -4,6 +4,7 @@ PROJECT := openapi2go
 GO_SRC != find . -path '*.go'
 
 build: bin/${PROJECT}
+tidy: go.sum
 
 .PHONY: test
 test: bin/petstore.json
@@ -18,10 +19,7 @@ format fmt:
 	go fmt
 	dprint fmt
 
-tidy:
-	go mod tidy
-
-bin/${PROJECT}: ${GO_SRC}
+bin/${PROJECT}: go.mod ${GO_SRC}
 	go build -o $@ main.go
 
 bin/petstore.json:
@@ -31,3 +29,6 @@ bin/${PROJECT}.tar: Dockerfile .dockerignore ${GO_SRC}
 	docker build ${CURDIR} \
 	--output type=tar,dest=$@ \
 	--output type=image,name=${PROJECT}
+
+go.sum: go.mod
+	go mod tidy

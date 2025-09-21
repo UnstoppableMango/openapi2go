@@ -10,6 +10,7 @@ import (
 	"github.com/unmango/go/cli"
 	openapi2go "github.com/unstoppablemango/openapi2go/pkg"
 	"github.com/unstoppablemango/openapi2go/pkg/gen"
+	"github.com/unstoppablemango/openapi2go/pkg/ux"
 )
 
 var (
@@ -18,8 +19,13 @@ var (
 	root = &cobra.Command{
 		Use:   "openapi2go",
 		Short: "Generate Go code from OpenAPI specifications",
-		Args:  cobra.ExactArgs(1),
+		// Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				ux.Main()
+				return
+			}
+
 			fsys := afero.NewOsFs()
 			opts.Specification = args[0]
 			log.Debug("Reading spec", "path", opts.Specification)
