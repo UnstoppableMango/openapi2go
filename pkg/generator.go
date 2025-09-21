@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/log"
+	"github.com/google/uuid"
 	"github.com/pb33f/libopenapi/datamodel/high/base"
 	v3 "github.com/pb33f/libopenapi/datamodel/high/v3"
 	"github.com/unstoppablemango/openapi2go/pkg/config"
@@ -19,11 +20,12 @@ var titleCase = cases.Title(language.English)
 
 type Generator struct {
 	config.Config
-	doc v3.Document
+	doc  v3.Document
+	spec uuid.UUID
 }
 
-func NewGenerator(doc v3.Document, config *config.Config) *Generator {
-	return &Generator{*config, doc}
+func NewGenerator(doc v3.Document, config config.Config) *Generator {
+	return &Generator{config, doc, uuid.Nil}
 }
 
 func (g *Generator) Execute(fset *token.FileSet) ([]*ast.File, error) {
@@ -169,7 +171,7 @@ func (g *Generator) parseFile(fset *token.FileSet) (*ast.File, error) {
 	)
 }
 
-func Generate(fset *token.FileSet, doc v3.Document, config *config.Config) ([]*ast.File, error) {
+func Generate(fset *token.FileSet, doc v3.Document, config config.Config) ([]*ast.File, error) {
 	return NewGenerator(doc, config).Execute(fset)
 }
 
