@@ -1,6 +1,6 @@
 module github.com/unstoppablemango/openapi2go
 
-go 1.25.0
+go 1.25.1
 
 require (
 	github.com/charmbracelet/log v0.4.2
