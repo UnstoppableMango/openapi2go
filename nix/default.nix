@@ -1,19 +1,23 @@
 {
   buildGoApplication,
-  cleanSource,
+  lib,
   ginkgo,
+  git,
   version,
 }:
 buildGoApplication {
   pname = "";
   inherit version;
 
-  src = cleanSource ../.;
+  src = lib.cleanSource ../.;
   modules = ../gomod2nix.toml;
 
-  nativeCheckInputs = [ ginkgo ];
+  nativeCheckInputs = [
+    ginkgo
+    git
+  ];
 
   checkPhase = ''
-    ginkgo run ./...
+    ginkgo run -r --label-filter='!E2E'
   '';
 }

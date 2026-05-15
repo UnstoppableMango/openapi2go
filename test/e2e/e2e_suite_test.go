@@ -24,7 +24,7 @@ var (
 
 func TestE2e(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "E2e Suite")
+	RunSpecs(t, "E2e Suite", Label("E2E"))
 }
 
 var _ = BeforeSuite(func(ctx context.Context) {
