@@ -15,7 +15,7 @@ require (
 	github.com/spf13/viper v1.21.0
 	github.com/unmango/go v0.8.0
 	github.com/unstoppablemango/ux v0.0.8
-	golang.org/x/text v0.36.0
+	golang.org/x/text v0.37.0
 )
 
 require (
