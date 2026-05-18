@@ -1,8 +1,6 @@
 package openapi
 
 import (
-	"errors"
-
 	"github.com/pb33f/libopenapi"
 	v3 "github.com/pb33f/libopenapi/datamodel/high/v3"
 )
@@ -13,10 +11,9 @@ func ParseDocument(data []byte) (v3.Document, error) {
 		return v3.Document{}, nil
 	}
 
-	doc, errs := docModel.BuildV3Model()
-	if len(errs) > 0 {
-		return v3.Document{}, errors.Join(errs...)
+	doc, err := docModel.BuildV3Model()
+	if err != nil {
+		return v3.Document{}, err
 	}
-
 	return doc.Model, nil
 }

@@ -8,7 +8,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/onsi/ginkgo/v2 v2.29.0
 	github.com/onsi/gomega v1.41.0
-	github.com/pb33f/libopenapi v0.27.2
+	github.com/pb33f/libopenapi v0.36.4
 	github.com/spf13/afero v1.15.0
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/pflag v1.0.10
@@ -54,7 +54,7 @@ require (
 	github.com/bombsimon/wsl/v5 v5.3.0 // indirect
 	github.com/breml/bidichk v0.3.3 // indirect
 	github.com/breml/errchkjson v0.4.1 // indirect
-	github.com/buger/jsonparser v1.1.1 // indirect
+	github.com/buger/jsonparser v1.1.2 // indirect
 	github.com/butuzov/ireturn v0.4.0 // indirect
 	github.com/butuzov/mirror v1.3.0 // indirect
 	github.com/catenacyber/perfsprint v0.10.0 // indirect
@@ -154,8 +154,8 @@ require (
 	github.com/nishanths/exhaustive v0.12.0 // indirect
 	github.com/nishanths/predeclared v0.2.2 // indirect
 	github.com/nunnatsa/ginkgolinter v0.21.2 // indirect
-	github.com/pb33f/jsonpath v0.1.2 // indirect
-	github.com/pb33f/ordered-map/v2 v2.3.0 // indirect
+	github.com/pb33f/jsonpath v0.8.2 // indirect
+	github.com/pb33f/ordered-map/v2 v2.3.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/polyfloyd/go-errorlint v1.8.0 // indirect
@@ -212,7 +212,7 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	go.yaml.in/yaml/v4 v4.0.0-rc.2 // indirect
+	go.yaml.in/yaml/v4 v4.0.0-rc.4 // indirect
 	golang.org/x/exp v0.0.0-20251009144603-d2f985daa21b // indirect
 	golang.org/x/exp/typeparams v0.0.0-20251023183803-a4bb9ffd2546 // indirect
 	golang.org/x/mod v0.35.0 // indirect
