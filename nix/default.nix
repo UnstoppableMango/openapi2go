@@ -6,7 +6,7 @@
   version,
 }:
 buildGoApplication {
-  pname = "";
+  pname = "openapi2go";
   inherit version;
 
   src = lib.cleanSource ../.;
