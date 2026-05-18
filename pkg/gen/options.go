@@ -1,7 +1,6 @@
 package gen
 
 import (
-	"errors"
 	"io"
 	"os"
 	"path/filepath"
@@ -60,10 +59,9 @@ func (o Options) ReadSpec(fsys afero.Fs) (v3.Document, error) {
 		return v3.Document{}, nil
 	}
 
-	doc, errs := docModel.BuildV3Model()
-	if len(errs) > 0 {
-		return v3.Document{}, errors.Join(errs...)
+	doc, err := docModel.BuildV3Model()
+	if err != nil {
+		return v3.Document{}, err
 	}
-
 	return doc.Model, nil
 }
