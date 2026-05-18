@@ -22,7 +22,7 @@
     };
 
     ux = {
-      url = "github:UnstoppableMango/ux?ref=fancy-fresh";
+      url = "github:UnstoppableMango/ux";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.systems.follows = "systems";
       inputs.flake-parts.follows = "flake-parts";
@@ -38,14 +38,12 @@
 
       imports = with inputs; [
         treefmt-nix.flakeModule
-        ux.flakeModules.default
       ];
 
       perSystem =
         {
           self',
           pkgs,
-          lib,
           system,
           ...
         }:
@@ -59,17 +57,6 @@
             overlays = with inputs; [
               gomod2nix.overlays.default
             ];
-          };
-
-          ux = {
-            builders.openapi2go = ./nix/builder.nix;
-            generate.test = {
-              builder = "openapi2go";
-              config = {
-                name = "petstore";
-                spec = lib.fetchurl "https://petstore3.swagger.io/api/v3/openapi.json";
-              };
-            };
           };
 
           packages = {
