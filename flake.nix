@@ -41,23 +41,11 @@
         ux.flakeModules.default
       ];
 
-      ux = {
-        builders.openapi2go = ./nix/builder.nix;
-        gen.test =
-          { lib }:
-          {
-            builder = "openapi2go";
-            config = {
-              name = "petstore";
-              spec = lib.fetchurl "https://petstore3.swagger.io/api/v3/openapi.json";
-            };
-          };
-      };
-
       perSystem =
         {
           self',
           pkgs,
+          lib,
           system,
           ...
         }:
@@ -71,6 +59,17 @@
             overlays = with inputs; [
               gomod2nix.overlays.default
             ];
+          };
+
+          ux = {
+            builders.openapi2go = ./nix/builder.nix;
+            generate.test = {
+              builder = "openapi2go";
+              config = {
+                name = "petstore";
+                spec = lib.fetchurl "https://petstore3.swagger.io/api/v3/openapi.json";
+              };
+            };
           };
 
           packages = {
