@@ -83,7 +83,8 @@
         "gomod2nix": "gomod2nix",
         "nixpkgs": "nixpkgs",
         "systems": "systems",
-        "treefmt-nix": "treefmt-nix"
+        "treefmt-nix": "treefmt-nix",
+        "ux": "ux"
       }
     },
     "systems": {
@@ -118,6 +119,39 @@
       "original": {
         "owner": "numtide",
         "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "ux": {
+      "inputs": {
+        "flake-parts": [
+          "flake-parts"
+        ],
+        "gomod2nix": [
+          "gomod2nix"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "systems": [
+          "systems"
+        ],
+        "treefmt-nix": [
+          "treefmt-nix"
+        ]
+      },
+      "locked": {
+        "lastModified": 1778987416,
+        "narHash": "sha256-BrBbrChOiqKxcsoCYz7RtY3RU3ovMrxUrmJmijwlFNc=",
+        "owner": "UnstoppableMango",
+        "repo": "ux",
+        "rev": "8dac3125a29635d145bac1b91504a61691499994",
+        "type": "github"
+      },
+      "original": {
+        "owner": "UnstoppableMango",
+        "ref": "fancy-fresh",
+        "repo": "ux",
         "type": "github"
       }
     }
