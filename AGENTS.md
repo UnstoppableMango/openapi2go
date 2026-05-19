@@ -13,6 +13,7 @@ make bin/openapi2go  # Build binary
 ```
 
 Run a single test file or suite via ginkgo directly:
+
 ```bash
 ginkgo ./test/e2e/...
 ```
@@ -24,6 +25,7 @@ CI runs inside `nix develop`: `nix develop -c make test`
 `openapi2go` converts OpenAPI specs into Go struct type declarations.
 
 **Data flow:**
+
 ```
 OpenAPI JSON/YAML → libopenapi (v3.Document) → Generator → Go AST ([]*ast.File) → go/format → Go source
 ```
