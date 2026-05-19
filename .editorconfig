@@ -7,3 +7,10 @@ trim_trailing_whitespace = true
 
 [*.{yaml,yml}]
 indent_style = space
+
+[*.nix]
+indent_style = space
+indent_size = 2
+
+[*.toml]
+indent_style = space
