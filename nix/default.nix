@@ -10,7 +10,7 @@ buildGoApplication {
   inherit version;
 
   src = lib.cleanSource ../.;
-  modules = ../gomod2nix.toml;
+  modules = ./gomod2nix.toml;
 
   nativeCheckInputs = [
     ginkgo
