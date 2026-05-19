@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/charmbracelet/log"
+	"charm.land/log/v2"
 	"github.com/unmango/go/cli"
 	"github.com/unstoppablemango/openapi2go/cmd"
 )

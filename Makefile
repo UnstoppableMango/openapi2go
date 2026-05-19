@@ -13,7 +13,7 @@ JQ            ?= jq
 GO_SRC != find . -path '*.go'
 
 build: bin/${PROJECT}
-tidy: go.sum
+tidy: go.sum nix/gomod2nix.toml
 
 .PHONY: test
 test: bin/petstore.json
@@ -41,3 +41,6 @@ bin/${PROJECT}.tar: Dockerfile .dockerignore ${GO_SRC}
 
 go.sum: go.mod
 	$(GO) mod tidy
+
+nix/gomod2nix.toml: go.sum
+	$(GOMOD2NIX) generate --dir ${CURDIR} --outdir ${@D}
