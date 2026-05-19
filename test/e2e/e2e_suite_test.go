@@ -9,13 +9,10 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gexec"
-
-	"github.com/unmango/go/vcs/git"
 )
 
 var (
 	cmdPath          string
-	gitRoot          string
 	petstoreSpecPath string
 
 	//go:embed testdata
@@ -28,14 +25,11 @@ func TestE2e(t *testing.T) {
 }
 
 var _ = BeforeSuite(func(ctx context.Context) {
-	root, err := git.RootContext(ctx)
-	Expect(err).NotTo(HaveOccurred())
-	gitRoot = root
-
-	cmdPath, err = gexec.Build(root)
+	var err error
+	cmdPath, err = gexec.Build("../..")
 	Expect(err).NotTo(HaveOccurred())
 
-	petstoreSpecPath = filepath.Join(root, "bin", "petstore.json")
+	petstoreSpecPath = filepath.Join("../..", "bin", "petstore.json")
 	Expect(petstoreSpecPath).To(BeARegularFile())
 })
 
