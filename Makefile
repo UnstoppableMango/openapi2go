@@ -1,3 +1,5 @@
+_ != mkdir -p bin
+
 PROJECT := openapi2go
 
 CURL		  ?= curl
