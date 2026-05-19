@@ -20,15 +20,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.inputs.systems.follows = "systems";
     };
-
-    ux = {
-      url = "github:UnstoppableMango/ux";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.systems.follows = "systems";
-      inputs.flake-parts.follows = "flake-parts";
-      inputs.gomod2nix.follows = "gomod2nix";
-      inputs.treefmt-nix.follows = "treefmt-nix";
-    };
   };
 
   outputs =
@@ -65,24 +56,34 @@
           };
 
           apps.default = {
+            type = "app";
             program = "${self'.packages.openapi2go}/bin/openapi2go";
-            meta.description = "Codegen tooling";
+            meta.description = "Convert OpenAPI Specs into Go Types";
           };
 
           devShells.default = pkgs.mkShellNoCC {
             packages = with pkgs; [
+              curl
               direnv
+              dprint
               go
               gomod2nix
               gopls
+              golangci-lint
               ginkgo
               gnumake
+              gopls
+              jq
               nixfmt
             ];
 
+            CURL = "${pkgs.curl}/bin/curl";
+            DPRINT = "${pkgs.dprint}/bin/dprint";
             GO = "${pkgs.go}/bin/go";
             GOMOD2NIX = "${pkgs.gomod2nix}/bin/gomod2nix";
+            GOLANGCI_LINT = "${pkgs.golangci-lint}/bin/golangci-lint";
             GINKGO = "${pkgs.ginkgo}/bin/ginkgo";
+            JQ = "${pkgs.jq}/bin/jq";
           };
 
           treefmt.programs = {
