@@ -28,6 +28,12 @@ format fmt:
 	$(GO) fmt ./...
 	$(DPRINT) fmt
 
+update:
+	nix flake update
+
+check:
+	nix flake check
+
 bin/${PROJECT}: go.mod ${GO_SRC}
 	$(GO) build -o $@ main.go
 
