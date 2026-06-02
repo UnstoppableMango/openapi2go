@@ -19,6 +19,7 @@ tidy: go.sum nix/gomod2nix.toml
 test: bin/petstore.json
 	$(GINKGO) run -r
 
+cover: coverprofile.out
 docker: bin/${PROJECT}.tar
 
 lint:
@@ -33,6 +34,9 @@ update:
 
 check:
 	nix flake check
+
+coverprofile.out: bin/petstore.json ${GO_SRC}
+	$(GINKGO) run -r --cover
 
 bin/${PROJECT}: go.mod ${GO_SRC}
 	$(GO) build -o $@ main.go
