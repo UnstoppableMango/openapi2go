@@ -10,6 +10,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
@@ -21,7 +23,12 @@ jobs:
         with:
           name: unstoppablemango
 
-      - run: nix develop -c make test
+      - run: nix develop -c make cover
+
+      - uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
+        with:
+          use_oidc: true
+          codecov_yml_path: .github/codecov.yml
 
   lint:
     runs-on: ubuntu-latest
