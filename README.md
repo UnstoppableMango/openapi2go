@@ -1,5 +1,13 @@
 # openapi2go
 
+[![CI](https://github.com/UnstoppableMango/openapi2go/actions/workflows/ci.yml/badge.svg)](https://github.com/UnstoppableMango/openapi2go/actions/workflows/ci.yml)
+[![Last commit](https://img.shields.io/github/last-commit/UnstoppableMango/openapi2go)](https://github.com/UnstoppableMango/openapi2go/commits/main)
+[![Go Report Card](https://goreportcard.com/badge/github.com/unstoppablemango/openapi2go)](https://goreportcard.com/report/github.com/unstoppablemango/openapi2go)
+[![Go Reference](https://pkg.go.dev/badge/github.com/unstoppablemango/openapi2go.svg)](https://pkg.go.dev/github.com/unstoppablemango/openapi2go)
+[![codecov](https://codecov.io/gh/UnstoppableMango/openapi2go/graph/badge.svg)](https://codecov.io/gh/UnstoppableMango/openapi2go)
+[![GitHub release](https://img.shields.io/github/v/release/UnstoppableMango/openapi2go)](https://github.com/UnstoppableMango/openapi2go/releases/latest)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A simple Go code generator for OpenAPI specifications.
 
 ## Usage
@@ -22,6 +30,9 @@ Flags:
 
 Configuration can be provided with `--config` to customize the generated output.
 Currently only a few options are supported.
+
+> [!WARNING]
+> Actually none of this works yet.
 
 ```yaml
 packageName: petstore # The Go package name to use. e.g. `package petstore`
