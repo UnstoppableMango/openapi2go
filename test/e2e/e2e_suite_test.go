@@ -25,11 +25,13 @@ func TestE2e(t *testing.T) {
 }
 
 var _ = BeforeSuite(func(ctx context.Context) {
-	var err error
-	cmdPath, err = gexec.Build("../..")
+	root, err := filepath.Abs("../..")
 	Expect(err).NotTo(HaveOccurred())
 
-	petstoreSpecPath = filepath.Join("../..", "bin", "petstore.json")
+	cmdPath, err = gexec.Build(root)
+	Expect(err).NotTo(HaveOccurred())
+
+	petstoreSpecPath = filepath.Join(root, "bin", "petstore.json")
 	Expect(petstoreSpecPath).To(BeARegularFile())
 })
 

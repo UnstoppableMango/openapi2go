@@ -5,3 +5,4 @@ bin/
 .make/
 go.work*
 /result
+.claude/

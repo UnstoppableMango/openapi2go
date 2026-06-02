@@ -25,7 +25,7 @@ var _ = Describe("Generate", func() {
 		ses, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
 
 		Expect(err).NotTo(HaveOccurred())
-		Eventually(ses, "25s").Should(gexec.Exit(0))
+		Eventually(ses, "5s").Should(gexec.Exit(0))
 
 		genpath := filepath.Join(outdir, "petstore.go")
 		Expect(genpath).To(BeARegularFile())
