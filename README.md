@@ -31,7 +31,7 @@ Flags:
 Configuration can be provided with `--config` to customize the generated output.
 Currently only a few options are supported.
 
-> [!WARN]
+> [!WARNING]
 > Actually none of this works yet.
 
 ```yaml
