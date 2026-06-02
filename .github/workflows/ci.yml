@@ -29,6 +29,7 @@ jobs:
         with:
           use_oidc: true
           codecov_yml_path: .github/codecov.yml
+          files: coverprofile.out
 
   lint:
     runs-on: ubuntu-latest
