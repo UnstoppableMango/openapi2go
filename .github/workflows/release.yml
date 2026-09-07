@@ -24,7 +24,7 @@ jobs:
           go-version-file: go.mod
           cache-dependency-path: go.sum
 
-      - uses: goreleaser/goreleaser-action@5daf1e915a5f0af01ddbcd89a43b8061ff4f1a89 # v7
+      - uses: goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7
         if: github.event_name == 'pull_request'
         with:
           version: '~> v2'
@@ -35,7 +35,7 @@ jobs:
           GORELEASER_CURRENT_TAG: v0.0.1
           GORELEASER_PREVIOUS_TAG: v0.0.1-alpha
 
-      - uses: goreleaser/goreleaser-action@5daf1e915a5f0af01ddbcd89a43b8061ff4f1a89 # v7
+      - uses: goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7
         if: github.event_name != 'pull_request'
         with:
           version: '~> v2'
