@@ -7,7 +7,7 @@ require (
 	github.com/goccy/go-yaml v1.19.2
 	github.com/google/uuid v1.6.0
 	github.com/onsi/ginkgo/v2 v2.32.2
-	github.com/onsi/gomega v1.41.0
+	github.com/onsi/gomega v1.43.0
 	github.com/pb33f/libopenapi v0.38.7
 	github.com/spf13/afero v1.15.0
 	github.com/spf13/cobra v1.10.2
@@ -15,7 +15,7 @@ require (
 	github.com/spf13/viper v1.21.0
 	github.com/unmango/go v0.16.6
 	github.com/unstoppablemango/ux v0.0.12
-	golang.org/x/text v0.37.0
+	golang.org/x/text v0.38.0
 )
 
 require (
@@ -222,11 +222,11 @@ require (
 	go.yaml.in/yaml/v4 v4.0.0-rc.6 // indirect
 	golang.org/x/exp v0.0.0-20251009144603-d2f985daa21b // indirect
 	golang.org/x/exp/typeparams v0.0.0-20260209203927-2842357ff358 // indirect
-	golang.org/x/mod v0.35.0 // indirect
-	golang.org/x/net v0.53.0 // indirect
+	golang.org/x/mod v0.36.0 // indirect
+	golang.org/x/net v0.56.0 // indirect
 	golang.org/x/sync v0.22.0 // indirect
 	golang.org/x/sys v0.46.0 // indirect
-	golang.org/x/tools v0.44.0 // indirect
+	golang.org/x/tools v0.45.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	honnef.co/go/tools v0.7.0 // indirect
