@@ -7,6 +7,7 @@
 [![codecov](https://codecov.io/gh/UnstoppableMango/openapi2go/graph/badge.svg)](https://codecov.io/gh/UnstoppableMango/openapi2go)
 [![GitHub release](https://img.shields.io/github/v/release/UnstoppableMango/openapi2go)](https://github.com/UnstoppableMango/openapi2go/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Hercules CI](https://hercules-ci.com/api/v1/site/github/account/UnstoppableMango/project/openapi2go/badge)](https://hercules-ci.com/github/UnstoppableMango/openapi2go)
 
 A simple Go code generator for OpenAPI specifications.
 
