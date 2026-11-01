@@ -84,7 +84,6 @@
             GOMOD2NIX = "${pkgs.gomod2nix}/bin/gomod2nix";
             GOLANGCI_LINT = "${pkgs.golangci-lint}/bin/golangci-lint";
             GINKGO = "${pkgs.ginkgo}/bin/ginkgo";
-            JQ = "${pkgs.jq}/bin/jq";
           };
 
           treefmt.programs = {

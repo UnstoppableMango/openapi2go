@@ -31,7 +31,7 @@ var _ = BeforeSuite(func(ctx context.Context) {
 	cmdPath, err = gexec.Build(root)
 	Expect(err).NotTo(HaveOccurred())
 
-	petstoreSpecPath = filepath.Join(root, "bin", "petstore.json")
+	petstoreSpecPath = filepath.Join(root, "bin", "petstore.yaml")
 	Expect(petstoreSpecPath).To(BeARegularFile())
 })
 
